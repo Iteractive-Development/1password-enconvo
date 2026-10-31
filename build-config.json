@@ -1,8 +1,8 @@
 {
   "origin": "original",
   "note": "Not a repo conversion: the marketplace content is hand-maintained in place. No upstream clone, no builder regeneration - edit marketplace/plugins/1password-enconvo directly; Enconvo reads the folder marketplace where it stands.",
-  "adapter_dir": "/Users/bradhallett/Documents/Agent Plugins/1password-enconvo",
-  "workspace": "/Users/bradhallett/Documents/Agent Plugins",
+  "adapter_dir": "/Users/bradhallett/Projects/Agent Plugins/1password-enconvo",
+  "workspace": "/Users/bradhallett/Projects/Agent Plugins",
   "prefix": "1password",
   "marketplace_name": "1password-agents",
   "category": "security",
