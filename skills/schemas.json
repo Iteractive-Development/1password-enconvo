@@ -3,48 +3,407 @@
     "name": "list_environments",
     "title": "1Password: List Environments",
     "description": "List all 1Password Environments in the account with their IDs and names. Read-only; never returns secret values.",
-    "routePath": "1password-enconvo/list_environments"
+    "routePath": "1password-enconvo/list_environments",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      }
+    }
   },
   {
     "name": "create_environment",
     "title": "1Password: Create Environment",
     "description": "Create a new 1Password Environment by name in the account.",
-    "routePath": "1password-enconvo/create_environment"
+    "routePath": "1password-enconvo/create_environment",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environmentName": {
+          "type": "string",
+          "description": "Name for the new Environment"
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      },
+      "required": [
+        "environmentName"
+      ]
+    }
   },
   {
     "name": "rename_environment",
     "title": "1Password: Rename Environment",
     "description": "Rename a 1Password Environment, given its name or ID.",
-    "routePath": "1password-enconvo/rename_environment"
+    "routePath": "1password-enconvo/rename_environment",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID"
+        },
+        "newName": {
+          "type": "string",
+          "description": "The new name"
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      },
+      "required": [
+        "environment",
+        "newName"
+      ]
+    }
   },
   {
     "name": "list_variables",
     "title": "1Password: List Variable Names",
     "description": "List the variable NAMES stored in a 1Password Environment. Never returns values — by design.",
-    "routePath": "1password-enconvo/list_variables"
+    "routePath": "1password-enconvo/list_variables",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID"
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      },
+      "required": [
+        "environment"
+      ]
+    }
   },
   {
     "name": "append_variables",
     "title": "1Password: Add Variables",
     "description": "Add or update variables in a 1Password Environment. Values flow into the vault only and are never returned to the caller.",
-    "routePath": "1password-enconvo/append_variables"
+    "routePath": "1password-enconvo/append_variables",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID"
+        },
+        "variables": {
+          "type": "array",
+          "description": "Variables to add or update",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Variable name, e.g. ACME_API_KEY"
+              },
+              "value": {
+                "type": "string",
+                "description": "Variable value (stored in the vault, write-only)"
+              },
+              "concealed": {
+                "type": "boolean",
+                "description": "Conceal the value when displayed (default true)"
+              }
+            },
+            "required": [
+              "name",
+              "value"
+            ]
+          }
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      },
+      "required": [
+        "environment",
+        "variables"
+      ]
+    }
   },
   {
     "name": "create_local_env_file",
     "title": "1Password: Mount .env",
     "description": "Create a locally mounted .env file for a 1Password Environment. Secret values resolve on demand inside processes and are never written to disk or returned to the agent. Never read this file into a chat.",
-    "routePath": "1password-enconvo/create_local_env_file"
+    "routePath": "1password-enconvo/create_local_env_file",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID"
+        },
+        "mountPath": {
+          "type": "string",
+          "description": "Absolute path where the .env file should be mounted"
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      },
+      "required": [
+        "environment",
+        "mountPath"
+      ]
+    }
   },
   {
     "name": "list_local_env_files",
     "title": "1Password: List Mounts",
     "description": "List locally mounted .env files for a 1Password Environment. Returns paths only.",
-    "routePath": "1password-enconvo/list_local_env_files"
+    "routePath": "1password-enconvo/list_local_env_files",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID"
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        }
+      },
+      "required": [
+        "environment"
+      ]
+    }
   },
   {
     "name": "doctor",
     "title": "1Password: Doctor",
     "description": "Diagnose the 1Password Environments setup: binary, handshake, tool surface, authentication, and Environments reachability — each check with its exact fix.",
-    "routePath": "1password-enconvo/doctor"
+    "routePath": "1password-enconvo/doctor",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override"
+        },
+        "binary_path": {
+          "type": "string",
+          "description": "Optional 1password-mcp binary path override"
+        }
+      }
+    }
+  },
+  {
+    "name": "env_file_mount",
+    "title": "env_file_mount",
+    "description": "Create a locally mounted .env file for an Environment; secrets resolve on demand inside processes. Route: 1password-enconvo/create_local_env_file",
+    "routePath": "1password-enconvo/env_file_mount",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID."
+        },
+        "mountPath": {
+          "type": "string",
+          "description": "Absolute path where the .env file should be mounted."
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": [
+        "environment",
+        "mountPath"
+      ]
+    }
+  },
+  {
+    "name": "environments_create",
+    "title": "environments_create",
+    "description": "Create a new 1Password Environment by name. Route: 1password-enconvo/create_environment",
+    "routePath": "1password-enconvo/environments_create",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environmentName": {
+          "type": "string",
+          "description": "Name for the new Environment."
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": [
+        "environmentName"
+      ]
+    }
+  },
+  {
+    "name": "environments_list",
+    "title": "environments_list",
+    "description": "List all 1Password Environments with IDs and names. Read-only; never returns secret values. Route: 1password-enconvo/list_environments",
+    "routePath": "1password-enconvo/environments_list",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "environments_rename",
+    "title": "environments_rename",
+    "description": "Rename a 1Password Environment. Route: 1password-enconvo/rename_environment",
+    "routePath": "1password-enconvo/environments_rename",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID."
+        },
+        "newName": {
+          "type": "string",
+          "description": "The new name."
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": [
+        "environment",
+        "newName"
+      ]
+    }
+  },
+  {
+    "name": "mounted_env_files",
+    "title": "mounted_env_files",
+    "description": "List locally mounted .env files for an Environment; returns paths only. Route: 1password-enconvo/list_local_env_files",
+    "routePath": "1password-enconvo/mounted_env_files",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID."
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": [
+        "environment"
+      ]
+    }
+  },
+  {
+    "name": "setup_doctor",
+    "title": "setup_doctor",
+    "description": "Diagnose the 1Password Environments setup: binary, handshake, tool surface, authentication, Environments reachability — each check with its exact fix. Route: 1password-enconvo/doctor",
+    "routePath": "1password-enconvo/setup_doctor",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        },
+        "binary_path": {
+          "type": "string",
+          "description": "Optional 1password-mcp binary path override."
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "variables_append",
+    "title": "variables_append",
+    "description": "Add or update variables in a 1Password Environment. Values flow into the vault only and are never returned. Route: 1password-enconvo/append_variables",
+    "routePath": "1password-enconvo/variables_append",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID."
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Variable name, e.g. ACME_API_KEY."
+              },
+              "value": {
+                "type": "string",
+                "description": "Variable value — stored into the vault, write-only."
+              },
+              "concealed": {
+                "type": "boolean",
+                "description": "Conceal the value when displayed (default true)."
+              }
+            },
+            "required": [
+              "name",
+              "value"
+            ]
+          },
+          "description": "Variables to add or update."
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": [
+        "environment",
+        "variables"
+      ]
+    }
+  },
+  {
+    "name": "variables_list",
+    "title": "variables_list",
+    "description": "List the variable NAMES in a 1Password Environment. Never returns values. Route: 1password-enconvo/list_variables",
+    "routePath": "1password-enconvo/variables_list",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "environment": {
+          "type": "string",
+          "description": "Environment name or ID."
+        },
+        "account_id": {
+          "type": "string",
+          "description": "Optional 1Password account ID override."
+        }
+      },
+      "required": [
+        "environment"
+      ]
+    }
   }
 ]
