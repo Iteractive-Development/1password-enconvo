@@ -1,0 +1,17 @@
+{
+  "origin": "original",
+  "note": "Not a repo conversion: the marketplace content is hand-maintained in place. No upstream clone, no builder regeneration - edit marketplace/plugins/1password-enconvo directly; Enconvo reads the folder marketplace where it stands.",
+  "adapter_dir": "/Users/bradhallett/Documents/Agent Plugins/1password-enconvo",
+  "workspace": "/Users/bradhallett/Documents/Agent Plugins",
+  "prefix": "1password",
+  "marketplace_name": "1password-agents",
+  "category": "security",
+  "marketplace_description": "1Password Environments for Enconvo: manage Environments, add variables, and mount on-demand .env files with secrets never returned to the agent — a curated native plugin over 1Password's official Environments MCP server. By Iteractive Development.",
+  "owner": {
+    "name": "Iteractive Development",
+    "url": "https://iteractive.dev"
+  },
+  "related": {
+    "upstream_server": "1Password Environments MCP server (1password-mcp) - provisioned by the 1Password desktop app, not bundled; upstream security stays 1Password's"
+  }
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "list_environments",
+    "title": "1Password: List Environments",
+    "description": "List all 1Password Environments in the account with their IDs and names. Read-only; never returns secret values.",
+    "routePath": "1password-enconvo/list_environments"
+  },
+  {
+    "name": "create_environment",
+    "title": "1Password: Create Environment",
+    "description": "Create a new 1Password Environment by name in the account.",
+    "routePath": "1password-enconvo/create_environment"
+  },
+  {
+    "name": "rename_environment",
+    "title": "1Password: Rename Environment",
+    "description": "Rename a 1Password Environment, given its name or ID.",
+    "routePath": "1password-enconvo/rename_environment"
+  },
+  {
+    "name": "list_variables",
+    "title": "1Password: List Variable Names",
+    "description": "List the variable NAMES stored in a 1Password Environment. Never returns values — by design.",
+    "routePath": "1password-enconvo/list_variables"
+  },
+  {
+    "name": "append_variables",
+    "title": "1Password: Add Variables",
+    "description": "Add or update variables in a 1Password Environment. Values flow into the vault only and are never returned to the caller.",
+    "routePath": "1password-enconvo/append_variables"
+  },
+  {
+    "name": "create_local_env_file",
+    "title": "1Password: Mount .env",
+    "description": "Create a locally mounted .env file for a 1Password Environment. Secret values resolve on demand inside processes and are never written to disk or returned to the agent. Never read this file into a chat.",
+    "routePath": "1password-enconvo/create_local_env_file"
+  },
+  {
+    "name": "list_local_env_files",
+    "title": "1Password: List Mounts",
+    "description": "List locally mounted .env files for a 1Password Environment. Returns paths only.",
+    "routePath": "1password-enconvo/list_local_env_files"
+  },
+  {
+    "name": "doctor",
+    "title": "1Password: Doctor",
+    "description": "Diagnose the 1Password Environments setup: binary, handshake, tool surface, authentication, and Environments reachability — each check with its exact fix.",
+    "routePath": "1password-enconvo/doctor"
+  }
+]

@@ -1,0 +1,351 @@
+{
+  "$schema": "https://enconvo.com/schemas/extension.json",
+  "name": "1password-enconvo",
+  "version": "1.0.0",
+  "title": "1Password Environments",
+  "description": "Manage 1Password Environments from Enconvo: list, create and rename Environments, add variables, and mount on-demand .env files — with secrets never returned to the agent. By Iteractive Development.",
+  "author": "Iteractive Development",
+  "homepage": "https://iteractive.dev",
+  "icon": "icon.png",
+  "license": "MIT",
+  "type": "module",
+  "categories": [
+    "Security",
+    "Developer Tools"
+  ],
+  "keywords": [
+    "1password",
+    "environments",
+    "secrets",
+    "environment variables",
+    "dotenv",
+    "env",
+    "vault",
+    "password manager",
+    "security",
+    "credentials"
+  ],
+  "preferences": [
+    {
+      "name": "account_id",
+      "type": "textfield",
+      "title": "Account ID",
+      "description": "Optional 1Password account ID. Leave empty to resolve it automatically through the 1Password app.",
+      "required": false
+    },
+    {
+      "name": "binary_path",
+      "type": "textfield",
+      "title": "1password-mcp path",
+      "description": "Optional full path to the 1password-mcp binary. Leave empty to use the standard locations (/usr/local/bin, Homebrew, or the 1Password app bundle).",
+      "required": false
+    }
+  ],
+  "commands": [
+    {
+      "name": "list_environments",
+      "title": "1Password: List Environments",
+      "description": "List all 1Password Environments in the account with their IDs and names. Read-only; never returns secret values.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        }
+      }
+    },
+    {
+      "name": "create_environment",
+      "title": "1Password: Create Environment",
+      "description": "Create a new 1Password Environment by name in the account.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "environmentName": {
+            "type": "string",
+            "description": "Name for the new Environment"
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        },
+        "required": [
+          "environmentName"
+        ]
+      }
+    },
+    {
+      "name": "rename_environment",
+      "title": "1Password: Rename Environment",
+      "description": "Rename a 1Password Environment, given its name or ID.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "description": "Environment name or ID"
+          },
+          "newName": {
+            "type": "string",
+            "description": "The new name"
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        },
+        "required": [
+          "environment",
+          "newName"
+        ]
+      }
+    },
+    {
+      "name": "list_variables",
+      "title": "1Password: List Variable Names",
+      "description": "List the variable NAMES stored in a 1Password Environment. Never returns values — by design.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "description": "Environment name or ID"
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        },
+        "required": [
+          "environment"
+        ]
+      }
+    },
+    {
+      "name": "append_variables",
+      "title": "1Password: Add Variables",
+      "description": "Add or update variables in a 1Password Environment. Values flow into the vault only and are never returned to the caller.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "description": "Environment name or ID"
+          },
+          "variables": {
+            "type": "array",
+            "description": "Variables to add or update",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Variable name, e.g. ACME_API_KEY"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Variable value (stored in the vault, write-only)"
+                },
+                "concealed": {
+                  "type": "boolean",
+                  "description": "Conceal the value when displayed (default true)"
+                }
+              },
+              "required": [
+                "name",
+                "value"
+              ]
+            }
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        },
+        "required": [
+          "environment",
+          "variables"
+        ]
+      }
+    },
+    {
+      "name": "create_local_env_file",
+      "title": "1Password: Mount .env",
+      "description": "Create a locally mounted .env file for a 1Password Environment. Secret values resolve on demand inside processes and are never written to disk or returned to the agent. Never read this file into a chat.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "description": "Environment name or ID"
+          },
+          "mountPath": {
+            "type": "string",
+            "description": "Absolute path where the .env file should be mounted"
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        },
+        "required": [
+          "environment",
+          "mountPath"
+        ]
+      }
+    },
+    {
+      "name": "list_local_env_files",
+      "title": "1Password: List Mounts",
+      "description": "List locally mounted .env files for a 1Password Environment. Returns paths only.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "environment": {
+            "type": "string",
+            "description": "Environment name or ID"
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          }
+        },
+        "required": [
+          "environment"
+        ]
+      }
+    },
+    {
+      "name": "doctor",
+      "title": "1Password: Doctor",
+      "description": "Diagnose the 1Password Environments setup: binary, handshake, tool surface, authentication, and Environments reachability — each check with its exact fix.",
+      "commandType": "function_command",
+      "mode": "no-view",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "description": "Optional 1Password account ID override"
+          },
+          "binary_path": {
+            "type": "string",
+            "description": "Optional 1password-mcp binary path override"
+          }
+        }
+      }
+    }
+  ],
+  "review": {
+    "test_cases": {
+      "positive": [
+        {
+          "description": "Doctor passes every check on a healthy setup.",
+          "prompt": "Run the command 1password-enconvo|doctor with the 1Password app running and Developer > Integrate with MCP clients enabled. Expect ok:true with binary, initialize, tools, authenticate and environments all 'pass'.",
+          "expected_behavior": "Every check reports pass and ok is true.",
+          "tools_triggered": "1password-enconvo|doctor"
+        },
+        {
+          "description": "List Environments returns names and IDs only.",
+          "prompt": "Run 1password-enconvo|list_environments. Expect account_id, count and an environments array with id and name fields only — no secret values.",
+          "expected_behavior": "The JSON has account_id, count and environments with id and name only — no secret values anywhere.",
+          "tools_triggered": "1password-enconvo|list_environments"
+        },
+        {
+          "description": "Create, rename and add variables confirm by name only.",
+          "prompt": "Run 1password-enconvo|create_environment with environmentName 'review-demo', then rename_environment to 'review-demo-2', then append_variables with one variable. Each response confirms by name and never contains the value.",
+          "expected_behavior": "Each step confirms by name; the variable value never appears in any response.",
+          "tools_triggered": "1password-enconvo|create_environment, 1password-enconvo|rename_environment, 1password-enconvo|append_variables"
+        },
+        {
+          "description": "List Variable Names returns names only.",
+          "prompt": "Run 1password-enconvo|list_variables on 'review-demo-2'. Expect the variable names array only — the server enforces no values.",
+          "expected_behavior": "The response carries variable names only; values are structurally absent.",
+          "tools_triggered": "1password-enconvo|list_variables"
+        },
+        {
+          "description": "Mount .env and list it.",
+          "prompt": "Run 1password-enconvo|create_local_env_file with mountPath /tmp/review-demo/.env, then list_local_env_files. Expect the mount path; the on-disk file stays value-free.",
+          "expected_behavior": "The mount path is confirmed and listed; the on-disk .env file contains no secret values.",
+          "tools_triggered": "1password-enconvo|create_local_env_file, 1password-enconvo|list_local_env_files"
+        },
+        {
+          "description": "Routes mirror commands.",
+          "prompt": "POST the same operations to http://localhost:54535/api/1password-enconvo/<name> with curl. Expect identical JSON results.",
+          "expected_behavior": "Route responses match the command responses field for field.",
+          "tools_triggered": "1password-enconvo routes"
+        }
+      ],
+      "negative": [
+        {
+          "description": "Locked app fails with a clear error.",
+          "prompt": "With the 1Password app locked or quit, run any command. Expect a clear error naming the state and the fix — never a silent hang, never a secret.",
+          "expected_behavior": "A clear error names the app state and the fix; nothing hangs and no secret appears.",
+          "tools_triggered": "1password-enconvo|doctor"
+        },
+        {
+          "description": "Doctor pinpoints the disabled integration.",
+          "prompt": "With Developer > Integrate with MCP clients disabled, run Doctor. Expect the binary or initialize check to fail with that exact remediation.",
+          "expected_behavior": "Doctor fails the binary/initialize check and prints the exact toggle remediation.",
+          "tools_triggered": "1password-enconvo|doctor"
+        },
+        {
+          "description": "Unknown environment fails cleanly.",
+          "prompt": "Run rename_environment on a nonexistent name. Expect a 400 naming it and listing available Environments.",
+          "expected_behavior": "A 400 error names the missing Environment and lists available ones.",
+          "tools_triggered": "1password-enconvo|rename_environment"
+        },
+        {
+          "description": "Malformed variables fail cleanly.",
+          "prompt": "Run append_variables with an empty variables array, then with a missing name. Expect a 400 naming the bad field.",
+          "expected_behavior": "A 400 error names the offending field.",
+          "tools_triggered": "1password-enconvo|append_variables"
+        },
+        {
+          "description": "Relative mount path rejected.",
+          "prompt": "Run create_local_env_file with mountPath 'rel/path/.env'. Expect a 400 requiring an absolute path.",
+          "expected_behavior": "A 400 error requires an absolute path.",
+          "tools_triggered": "1password-enconvo|create_local_env_file"
+        },
+        {
+          "description": "Enterprise policy surfaces honestly.",
+          "prompt": "With an Agentic-permissions policy disabling the local MCP server, run Doctor. Expect the environments check to fail with the policy explanation.",
+          "expected_behavior": "Doctor fails the environments check and explains the enterprise policy.",
+          "tools_triggered": "1password-enconvo|doctor"
+        }
+      ]
+    },
+    "demo_recording_url": "https://iteractive.dev"
+  },
+  "scripts": {
+    "build": "enconvo plugin build",
+    "dev": "enconvo plugin build --dev",
+    "validate": "enconvo plugin validate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@enconvo/api": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
