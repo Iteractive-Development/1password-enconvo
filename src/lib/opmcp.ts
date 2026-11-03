@@ -57,6 +57,7 @@ interface Pending {
 
 export class OpMcp {
     private proc: ReturnType<typeof spawn> | null = null;
+    private stderrOf: () => string = () => "";
     private buffer = "";
     private pending = new Map<number, Pending>();
     private nextId = 1;
@@ -87,15 +88,24 @@ export class OpMcp {
             }
             this.proc = child;
             child.stdout?.on("data", (chunk: Buffer) => this.onData(String(chunk)));
-            child.stderr?.on("data", () => {});
+            const stderrBuf: string[] = [];
+            child.stderr?.on("data", (chunk: Buffer) => {
+                stderrBuf.push(String(chunk));
+                if (stderrBuf.join("").length > 8192) stderrBuf.splice(0, stderrBuf.length - 4);
+            });
+            const stderrOf = () => {
+                const t = stderrBuf.join("").trim();
+                return t ? " — server said: " + t.slice(-2000) : "";
+            };
+            this.stderrOf = stderrOf;
             child.on("exit", (code) => {
-                this.rejectAll(new OpMcpError("1password-mcp exited unexpectedly (code " + code + ")", SETUP_HINT));
+                this.rejectAll(new OpMcpError("1password-mcp exited unexpectedly (code " + code + ")" + stderrOf(), SETUP_HINT));
             });
             child.on("error", (e) => {
-                this.rejectAll(new OpMcpError("1password-mcp could not start: " + e.message, SETUP_HINT));
+                this.rejectAll(new OpMcpError("1password-mcp could not start: " + e.message + stderrOf(), SETUP_HINT));
             });
             const guard = setTimeout(() => {
-                reject(new OpMcpError("1password-mcp did not answer initialize within " + timeoutMs + "ms", SETUP_HINT));
+                reject(new OpMcpError("1password-mcp did not answer initialize within " + timeoutMs + "ms" + stderrOf(), SETUP_HINT));
             }, timeoutMs + 2000);
             this.request("initialize", {
                 protocolVersion: "2024-11-05",

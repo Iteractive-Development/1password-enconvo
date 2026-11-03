@@ -2,9 +2,6 @@
 name: 1password-enconvo
 description: >
   Manage 1Password Environments from Enconvo: list, create and rename Environments, add variables, and mount on-demand .env files — with secrets never returned to the agent. By Iteractive Development.
-metadata:
-  author: Iteractive Development
-  version: "1.0.0"
 ---
 
 # 1Password Environments for Enconvo

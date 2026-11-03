@@ -1,0 +1,4 @@
+interface:
+  display_name: 1Password Environments
+  short_description: Manage Environments and mount .env files with secrets never returned to the agent
+  default_prompt: List my 1Password Environments

@@ -154,6 +154,7 @@ export async function appendVariables(options: Options & { environment?: string;
         const name = String(v?.name ?? "").trim();
         const value = String(v?.value ?? "");
         if (!name) throw new OpMcpError("variables[" + i + "].name is required");
+        if (value === "") throw new OpMcpError("variables[" + i + "].value is required (an empty value would write an empty secret)");
         // Values flow INTO the vault only; they are never echoed back by this plugin.
         return { name, value, concealed: typeof v?.concealed === "boolean" ? v.concealed : true };
     });
