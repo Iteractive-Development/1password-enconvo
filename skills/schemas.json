@@ -193,10 +193,6 @@
         "account_id": {
           "type": "string",
           "description": "Optional 1Password account ID override"
-        },
-        "binary_path": {
-          "type": "string",
-          "description": "Optional 1password-mcp binary path override"
         }
       }
     }

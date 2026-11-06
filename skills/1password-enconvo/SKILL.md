@@ -36,7 +36,7 @@ Every command is callable as a route at `/api/1password-enconvo/<name>` with a J
 | `append_variables` | `{environment, variables: [{name, value, concealed?}], account_id?}` | names added (values never echoed) |
 | `create_local_env_file` | `{environment, mountPath, account_id?}` | mount path + handling note |
 | `list_local_env_files` | `{environment, account_id?}` | mount paths only |
-| `doctor` | `{account_id?, binary_path?}` | per-check pass/fail with fixes |
+| `doctor` | `{account_id?}` | per-check pass/fail with fixes |
 
 `environment` accepts a name or an ID; it is resolved through `list_environments`. `account_id` is optional everywhere — the plugin resolves it through the app.
 
