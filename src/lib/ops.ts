@@ -35,8 +35,25 @@ function mergedOptions(options: Options): Options {
     return options;
 }
 
+async function preferredBinaryPath(): Promise<string | undefined> {
+    // The plugin preference (settings UI) is the only honoured override;
+    // per-call binary_path fields are ignored (review 2026-11-06).
+    try {
+        const { PreferenceManageUtils } = await import("@enconvo/api");
+        const info: any = await PreferenceManageUtils.getPreferenceInfo("1password-enconvo");
+        const flat: Record<string, unknown> = (info?.preferences as Record<string, unknown> | undefined) ?? (info ?? {});
+        const p = flat.binary_path;
+        return typeof p === "string" && p.trim() ? p.trim() : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
 async function withSession<T>(options: Options, fn: (m: OpMcp) => Promise<T>): Promise<T> {
-    const client = await OpMcp.connect(typeof options.binary_path === "string" ? options.binary_path : undefined);
+    // binary_path is honoured from the plugin preference ONLY. A per-call
+    // override would let any route caller point the plugin at an arbitrary
+    // binary, so the request field is deliberately ignored (review 2026-11-06).
+    const client = await OpMcp.connect(await preferredBinaryPath());
     try {
         return await fn(client);
     } finally {
@@ -209,8 +226,10 @@ export async function doctor(options: Options): Promise<{ ok: boolean; checks: D
     const checks: DoctorCheck[] = [];
     const add = (check: string, status: "pass" | "fail", detail: string, fix?: string) => checks.push({ check, status, detail, fix });
 
-    // 1. Binary resolvable
-    const override = typeof options.binary_path === "string" ? options.binary_path : undefined;
+    // 1. Binary resolvable (binary_path honoured from the plugin preference
+    // only — a per-call override would let any caller point at an arbitrary
+    // binary; the request field is ignored, review 2026-11-06)
+    const override = await preferredBinaryPath();
     const bin = resolveBinaryPath(override);
     if (bin) {
         add("binary", "pass", "1password-mcp found at " + bin);

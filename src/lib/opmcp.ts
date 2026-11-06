@@ -1,5 +1,28 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+declare const __dirname: string | undefined;
+
+function pluginVersion(): string {
+    // The built bundle is CommonJS, where Node defines __dirname natively
+    // (esbuild/tsup pass it through). import.meta.url is NOT usable here:
+    // the CJS shim leaves it an empty object. Works in both layouts — the
+    // installed flattened layout (built files at the plugin root next to
+    // package.json) and the repo dev layout (dist/<cmd>.js).
+    if (typeof __dirname !== "string") return "0.0.0";
+    for (const rel of [join(__dirname, "package.json"), join(__dirname, "..", "package.json"), join(__dirname, "..", "..", "package.json")]) {
+        try {
+            const pkg = JSON.parse(readFileSync(rel, "utf8"));
+            if (typeof pkg.version === "string" && pkg.name === "1password-enconvo") return pkg.version;
+        } catch {
+            /* try next candidate */
+        }
+    }
+    return "0.0.0";
+}
+
+export const CLIENT_INFO = { name: "1password-enconvo", version: pluginVersion() };
 
 /**
  * Minimal stdio MCP client for the 1Password Environments MCP server.
@@ -110,7 +133,7 @@ export class OpMcp {
             this.request("initialize", {
                 protocolVersion: "2024-11-05",
                 capabilities: {},
-                clientInfo: { name: "1password-enconvo", version: "1.0.0" },
+                clientInfo: CLIENT_INFO,
             }, timeoutMs)
                 .then((result) => {
                     this.serverInfo = result?.serverInfo ?? null;
